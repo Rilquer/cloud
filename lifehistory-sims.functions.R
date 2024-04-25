@@ -45,7 +45,7 @@ makeAnc <- function(x,path,name,snps=T,samples=500,rec=0,len=1000,size=10000,mut
     }
   }
   vcfR::write.vcf(vcf,file = file)
-  R.utils::gunzip(file)
+  R.utils::gunzip(file, overwrite = TRUE, remove = TRUE)
 }
 
 ### demAncestral ###
