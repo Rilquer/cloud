@@ -17,6 +17,7 @@ makeAnc <- function(x,path,name,snps=T,samples=500,rec=0,len=1000,size=10000,mut
     dir_delete(dir)
   }
   if (snps) {
+    # IN THE FUTUREl, gotta add the option to simulate the alternative to SNPs, e.g., mtDNA haplotypes.
     ms_info=data.frame(ms_path = paste0(dir,'/snp',1:(len+(len*0.5))),
                        samples=samples,rec_rate=rec,
                        seq_length=1,
