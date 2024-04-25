@@ -7,6 +7,7 @@
 
 makeAnc <- function(x,path,name,snps=T,samples=500,rec=0,len=1000,size=10000,mut=1e-5) {
   require(fs)
+  source_python('https://raw.githubusercontent.com/Rilquer/cloud/main/lifehistory-sims.functions.py')
   name <- name
   file <- paste0(path,'/',name,'_rep',x,'.vcf.gz')
   tdir <- tempdir()
@@ -53,7 +54,6 @@ demAncestral <- function(path,name,reps=1,snps=T,samples=500,rec=0,len=1000,size
   require(vcfR)
   require(tictoc)
   require(parallel)
-  source_python(paste0(proj_path,'python/functions.py'))
   message('Simulating ',reps,' ancestral pops:')
   message('N of SNPs: ',len)
   message('Pop size: ',size)
