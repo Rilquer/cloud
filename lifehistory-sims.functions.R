@@ -5,8 +5,9 @@
 ## allelic SNPs and merging remaining
 ## This function is to be used within demAncestral()
 
-makeAnc <- function(x) {
+makeAnc <- function(x,path,name,snps=T,samples=500,rec=0,len=1000,size=10000,mut=1e-5) {
   require(fs)
+  name <- name
   file <- paste0(path,'/',name,'_rep',x,'.vcf.gz')
   tdir <- tempdir()
   dir.create(tdir)
@@ -59,7 +60,8 @@ demAncestral <- function(path,name,reps=1,snps=T,samples=500,rec=0,len=1000,size
   message('Sample size: ',samples)
   message('Mutation rate: ',mut)
   tic()
-  mclapply(1:reps,makeAnc, mc.cores = ncores)
+  #mclapply(1:reps,makeAnc, mc.cores = ncores)
+  lapply(1:reps,makeAnc,path = path,name = name,snps=snps,samples=samples,rec=rec,len=len,size=size,mut=mut)
   toc()
 }
 
