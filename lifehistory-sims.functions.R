@@ -91,7 +91,7 @@ demRender <- function(params,ngen,script = 'script.R',parallel=FALSE,ncores=1) {
   require(future)
   if (parallel == TRUE) {
     tic()
-    plan(multicore, workers = ncores)
+    plan(multisession, workers = ncores)
     message('Rendering ',nrow(params),' models with slimr::slim_script_render...')
     rendered <- slimr::slim_script_render(sim[[1]], template = apply(params,1,as.list), parallel=TRUE)
     message('Done')
@@ -119,7 +119,7 @@ demRun <- function(script,nrep=1,parallel=TRUE,ncores=1) {
   script <- rep(script,nrep)
   if (parallel == TRUE) {
     tic()
-    plan(multicore, workers = ncores)
+    plan(multisession, workers = ncores)
     sr <- slim_run(script , parallel = TRUE, throw_error = FALSE)
     toc()
   } else {
