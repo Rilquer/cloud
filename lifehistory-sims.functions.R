@@ -115,12 +115,14 @@ demRender <- function(params,ngen,script = 'script.R',parallel=FALSE,ncores=1) {
 
 demRun <- function(script,nrep=1,parallel=TRUE,ncores=1) {
   require(tictoc)
-  require(future)
+  #require(future)
+  require(parallel)
   script <- rep(script,nrep)
   if (parallel == TRUE) {
     tic()
-    plan(multisession, workers = ncores)
-    sr <- slim_run(script , parallel = TRUE, throw_error = FALSE)
+    #plan(multisession, workers = ncores)
+    #sr <- slim_run(script , parallel = TRUE, throw_error = FALSE)
+    sr <- mclapply(script,slim_run, throw_error = FALSE, ncores = ncores)
     toc()
   } else {
     tic()
