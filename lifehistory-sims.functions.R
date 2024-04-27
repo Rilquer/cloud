@@ -1,6 +1,6 @@
-##### Demographic modeling  ######
+#### Demographic modeling  ######
 
-## makeAnc() ##
+## makeAnc() ###
 ## Function to make one ancestral pop by simulating several SNPs, removing tri
 ## allelic SNPs and merging remaining
 ## This function is to be used within demAncestral()
@@ -132,9 +132,7 @@ demRun <- function(script,nrep=1,parallel=TRUE,ncores=1) {
   return(sr)
 }
 
-############################
 ####  Post-processing   ####
-############################
 
 ### Basic functions to retract specific data from one slim run ###
 # In the functions below, y = one element inside the output of demRun (i.e., one individual slimr output)
@@ -144,7 +142,8 @@ getParams <- function(y) {
   stop_gen <- max(y$output_data$generation)
   params_temp <- y$output_data %>% filter(generation==1) %>% select(name,data) %>%
     pivot_wider(id_cols = everything(),names_from = name,values_from = data) %>% 
-    select(!(matches('_p[[:digit:]]$'))) %>% select(-c(fst,total_ht)) %>% 
+    select(!(matches('_p[[:digit:]]$'))) %>% select(!(matches('_all$'))) %>% 
+    #%>% select(-c(fst,total_ht)) %>% 
     mutate_at(vars(-c("name","ev_type")),as.numeric) %>% mutate(stop_gen = stop_gen)
   return(params_temp)
 }
@@ -158,7 +157,7 @@ getData <- function(y, final = FALSE) {
   }
   data_temp <- y$output_data %>% filter(generation %in% last_gen) %>% 
     select(generation,name,data) %>% pivot_wider(id_cols = everything(),names_from = name,values_from = data) %>%
-    select(c(generation,matches('_p[[:digit:]]$'),total_ht,fst)) %>% 
+    select(c(generation,matches('_p[[:digit:]]$'),matches('_all$'))) %>% 
     mutate_if(is.character,as.numeric)
   return(data_temp)
 }
@@ -227,7 +226,7 @@ demResults <- function(x) {
 }
 
 ### demCheckFailed ###
-# Check all functions and return dataframe of runs that suceeded, runs that failed
+# Check all runs and return dataframe of runs that suceeded, runs that failed
 # and their respective model parameters and the error message
 demCheckFailed <- function(x) {
   getErPar <- function(y) {
@@ -299,9 +298,7 @@ demParams <- function(x) {
   toc()
 }
 
-####################################################
 #######     Calculating pop gen sum stats    #######
-####################################################
 
 ## demFormat ##
 # Format VCF from sims output into `vcfR` objects for stats calculation
