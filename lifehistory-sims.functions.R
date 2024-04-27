@@ -248,14 +248,14 @@ demCheckFailed <- function(x) {
     message('Retrieving simulation data...')
     erData <- lapply(x,getErData)
     temp <- list(erPar,erData)
-    names(temp) <- c('Parameter','Sim data')
+    names(temp) <- c('Parameter','Sim_data')
   } else {
     message('Retrieving simulation parameters...')
     erPar <- getErPar(x)
     message('Retrieving simulation data...')
     erData <- getErData(x)
     temp <- list(erPar,erData)
-    names(temp) <- c('Parameter','Sim data')
+    names(temp) <- c('Parameter','Sim_data')
   }
   return(temp)
 }
