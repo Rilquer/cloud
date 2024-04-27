@@ -247,6 +247,7 @@ demCheckFailed <- function(x) {
     erPar <- lapply(x,getErPar) %>% do.call(what = rbind.data.frame)
     message('Retrieving simulation data...')
     erData <- lapply(x,getErData)
+    erData[sapply(erData, is.null)] <- NULL # Removing NULL elements
     temp <- list(erPar,erData)
     names(temp) <- c('Parameter','Sim_data')
   } else {
