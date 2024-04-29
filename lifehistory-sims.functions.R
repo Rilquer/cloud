@@ -115,7 +115,7 @@ demRender <- function(params,ngen,script = 'script.R',parallel=FALSE,ncores=1) {
 
 demRun <- function(script,nrep=1,parallel=TRUE,ncores=1) {
   require(tictoc)
-  #require(future)
+  require(future)
   require(parallel)
   script <- rep(script,nrep)
   if (parallel == TRUE) {
