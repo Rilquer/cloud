@@ -164,30 +164,31 @@ getData <- function(y, final = FALSE) {
 
 getVCF <- function(y) {
   require(tidyverse)
-  vcf_p1 <- y$output_data %>% filter(name=='p1_VCF') %>% select(data)
-  # We check if VCF output exists. It won't, in case there was an error
-  # If no VCF exists, returns NULL.
-  if (nrow(vcf_p1)!=0) {
-    vcf_p1 <- vcf_p1 %>% as.character() %>%
-      gsub(pattern = ".*##fileformat*", replacement = "##fileformat")
-  } else {
-    vcf_p1 <- NULL
-  }
-  vcf_p2 <- y$output_data %>% filter(name=='p2_VCF') %>% select(data)
-  if (nrow(vcf_p2)!=0) {
-    vcf_p2 <- vcf_p2 %>% as.character() %>%
-      gsub(pattern = ".*##fileformat*", replacement = "##fileformat")
-  } else {
-    vcf_p2 <- NULL
-  }
-  vcf_p3 <- y$output_data %>% filter(name=='p3_VCF') %>% select(data)
+  # vcf_p1 <- y$output_data %>% filter(name=='p1_VCF') %>% select(data)
+  # # We check if VCF output exists. It won't, in case there was an error
+  # # If no VCF exists, returns NULL.
+  # if (nrow(vcf_p1)!=0) {
+  #   vcf_p1 <- vcf_p1 %>% as.character() %>%
+  #     gsub(pattern = ".*##fileformat*", replacement = "##fileformat")
+  # } else {
+  #   vcf_p1 <- NULL
+  # }
+  # vcf_p2 <- y$output_data %>% filter(name=='p2_VCF') %>% select(data)
+  # if (nrow(vcf_p2)!=0) {
+  #   vcf_p2 <- vcf_p2 %>% as.character() %>%
+  #     gsub(pattern = ".*##fileformat*", replacement = "##fileformat")
+  # } else {
+  #   vcf_p2 <- NULL
+  # }
+  vcf_p3 <- y$output_data %>% filter(name=='vcf') %>% select(data)
   if (nrow(vcf_p3)!=0) {
     vcf_p3 <- vcf_p3 %>% as.character() %>%
       gsub(pattern = ".*##fileformat*", replacement = "##fileformat")
   } else {
     vcf_p3 <- NULL
   }
-  return(list(vcf_p1,vcf_p2,vcf_p3))
+  #return(list(vcf_p1,vcf_p2,vcf_p3))
+  return(list(vcf_p3))
 }
 
 ### Functions implementing the basic funcitons above to retrieve info from all runs in a slim_run output ###
