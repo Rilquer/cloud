@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+	<idinfo>
+		<descript>
+			<abstract>Amazon Biome sensu WWF The Amazon Biome is roughly equivalent of the (usually called) Amazon Rainforest (Floresta Amazônica or Amazônia, in Portuguese and Selva Amazónica o Amazonía in Spanish)
+The Amazon Biome is mainly a moist broadleaf forest but can also include other vegetation physiognomies like swamp forests and flooded forest, savannas, grasslands and bamboo mixed forests among others.</abstract>
+			<purpose> Development of the WWF´s Ecological Vision for the Amazon</purpose>
+			<supplinf/>
+		</descript>
+		<useconst>(http://creativecommons.org/licenses/by/3.0)This work is licensed under a Creative Commons Attribution 3.0 License (http://creativecommons.org/licenses/by/3.0).</useconst>
+		<datacred/>
+		<citation>
+			<citeinfo>
+				<title>Amazon Biome</title>
+				<pubdate/>
+				<othercit> WWF´s Living Amazon Initiative (http://awsassets.panda.org/downloads/living_amazon_strategy_summary_final.pdf)</othercit>
+				<origin>JC Riveros Sidney Rodrigues Cesar Suarez Aldo Soto</origin>
+				<onlink>http://app.databasin.org/app/pages/datasetPage.jsp?id=7c01a6d864fe4158b455c812ab040b1f</onlink>
+				<pubinfo>
+					<publish/>
+					<pubplace/>
+				</pubinfo>
+			</citeinfo>
+		</citation>
+		<ptcontac>
+			<cntinfo>
+				<cntperp>
+					<cntper>JC Riveros (jc.riveros@wwfperu.org)</cntper>
+					<cntorg/>
+				</cntperp>
+			</cntinfo>
+		</ptcontac>
+		<status>
+			<progress/>
+			<update/>
+		</status>
+		<timeperd>
+			<timeinfo>
+				<sngdate>Contemporary (circa 2000) distribution of the Amazon Biome</sngdate>
+				<current/>
+			</timeinfo>
+		</timeperd>
+		<keywords>
+			<theme>
+				<themekey>amazon</themekey>
+				<themekey>amazonia</themekey>
+				<themekt>Data Basin tags</themekt>
+			</theme>
+		</keywords>
+		<spdom>
+			<bounding>
+				<northbc>9.996016705751469</northbc>
+				<eastbc>-42.74382506757035</eastbc>
+				<southbc>-19.287682040467892</southbc>
+				<westbc>-81.18355499544826</westbc>
+			</bounding>
+		</spdom>
+	</idinfo>
+	<dataqual>
+		<attracc>
+			<attraccr> Completed</attraccr>
+		</attracc>
+		<complete> Completed</complete>
+		<lineage>
+			<procstep>
+				<procdesc>Consolidated Data Basin Info:  Dataset was developed along 2007-08 using a large scale map (Olson´s terrestrial ecoregions of the world) as a spatial base and it was refined in every country with the best available dataset. i.e Etter´s ecosystem map in Colombia, IBGE in Brazil, IIAP in Peru and so on. </procdesc>
+			</procstep>
+		</lineage>
+	</dataqual>
+	<eainfo>
+		<detailed>
+			<attr>
+				<attrlabl>FID</attrlabl>
+				<attalias>FID</attalias>
+				<attrdef/>
+				<attrdomv/>
+			</attr>
+			<attr>
+				<attrlabl>Shape</attrlabl>
+				<attalias>Shape</attalias>
+				<attrdef/>
+				<attrdomv/>
+			</attr>
+			<attr>
+				<attrlabl>ID</attrlabl>
+				<attalias>ID</attalias>
+				<attrdef>Polygon ID</attrdef>
+				<attrdomv/>
+			</attr>
+			<attr>
+				<attrlabl>AREA</attrlabl>
+				<attalias>AREA</attalias>
+				<attrdef>Calculated Area</attrdef>
+				<attrdomv/>
+			</attr>
+			<attr>
+				<attrlabl>PERIMETER</attrlabl>
+				<attalias>PERIMETER</attalias>
+				<attrdef>Calculated Perimeter</attrdef>
+				<attrdomv/>
+			</attr>
+			<attr>
+				<attrlabl>FORMA</attrlabl>
+				<attalias>FORMA</attalias>
+				<attrdef>Shape Index</attrdef>
+				<attrdomv/>
+			</attr>
+			<attr>
+				<attrlabl>POLYAREA</attrlabl>
+				<attalias>POLYAREA</attalias>
+				<attrdef>Polygon Area</attrdef>
+				<attrdomv/>
+			</attr>
+			<attr>
+				<attrlabl>AREAPROJ</attrlabl>
+				<attalias>AREAPROJ</attalias>
+				<attrdef>Projected Area</attrdef>
+				<attrdomv/>
+			</attr>
+		</detailed>
+	</eainfo>
+	<distinfo>
+		<distrib>
+			<cntinfo>
+				<cntorgp>
+					<cntorg>Data Basin</cntorg>
+					<cntper>Data Basin Administrator</cntper>
+				</cntorgp>
+				<cntaddr>
+					<addrtype>physical address</addrtype>
+					<address>136 SW Washington Ave, Suite 202</address>
+					<city>Corvallis</city>
+					<state>OR</state>
+					<postal>97333</postal>
+					<country>USA</country>
+				</cntaddr>
+				<cntvoice>541-757-0687</cntvoice>
+				<cntemail>databasin_admin@consbio.org</cntemail>
+			</cntinfo>
+		</distrib>
+		<resdesc>Amazon Biome</resdesc>
+		<distliab>No warranty is made by Data Basin for use of this dataset.  No warranty is made by Data Basin regarding the accuracy, reliability, or completeness of this dataset. In no event shall Data Basin have any liability whatsoever for payment of any consequential, incidental, indirect, special, or tort damages of any kind, including, but not limited to, any loss of profits arising out of the use or reliance on the geographic or attribute data contained within this dataset or arising out of the delivery, installation, operation, or support by Data Basin.</distliab>
+		<stdorder>
+			<digform>
+				<digtinfo>
+					<formname>Feature Layer</formname>
+					<formvern>ArcGIS  10</formvern>
+					<formspec>Feature Layer</formspec>
+					<filedec>No compression applied</filedec>
+				</digtinfo>
+				<digtopt>
+					<onlinopt>
+						<computer>
+							<networka>
+								<networkr>http://app.databasin.org/app/pages/datasetPage.jsp?id=7c01a6d864fe4158b455c812ab040b1f</networkr>
+							</networka>
+						</computer>
+						<accinstr>Download from http://databasin.org</accinstr>
+					</onlinopt>
+				</digtopt>
+			</digform>
+			<fees>None</fees>
+			<ordering>Download from http://databasin.org</ordering>
+		</stdorder>
+		<techpreq>ESRI ArcGIS Desktop and supporting operating systems.</techpreq>
+	</distinfo>
+	<Esri><CreaDate>20121205</CreaDate><CreaTime>21563300</CreaTime><SyncOnce>TRUE</SyncOnce><DataProperties><itemProps><itemLocation><linkage Sync="TRUE">file://\\IP-0AFC471C\D\arcgisserver\services\im2\7c01a6d864fe4158b455c812ab040b1f\7c01a6d864fe4158b455c812ab040b1f\commondata\data0\amazonia</linkage><protocol Sync="TRUE">Local Area Network</protocol></itemLocation></itemProps><copyHistory><copy source="D:\arcgisserver\services\im2\7c01a6d864fe4158b455c812ab040b1f\commondata\data0\amazonia" dest="\\IP-0AFC471C\D\arcgisserver\services\im2\7c01a6d864fe4158b455c812ab040b1f\7c01a6d864fe4158b455c812ab040b1f\commondata\data0\amazonia" date="20121205" time="21563300"></copy></copyHistory></DataProperties></Esri></metadata>
