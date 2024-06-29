@@ -76,14 +76,15 @@ demAncestral <- function(path,name,reps=1,snps=T,samples=500,rec=0,len=1000,size
 
 # This function mostly implement slim_script_render, and it is needed to transform
 # the more user-friendly dataframe format of inputting the values to the list format.
-# As of Dec 10, 2023, the dataframe format can't handle the path strings I am using
-# to read and output VCF.
-# We also use this funciton to retrieve ngen before eding the final block
+# As of Dec 10, 2023, the dataframe format can't handle any string defining the
+# path for file reading or writing.
+# We also use this function to retrieve ngen before adding the final block
 # to set the final generation separately.
 
 ## Params - Dataframe with parameters to be set. Number of rows correspond to models to be render. One value per parameter
 ## Ngen - how many generations the simulation should run by
-## script - an R script creating all the slimr_blocks and merging them with slimr_script. The value of ngen is expected to be used here.
+## script - an R script creating all the slimr_blocks and merging them with slimr_script.
+## The value of ngen is expected to be used here.
 demRender <- function(params,ngen,script = 'script.R',parallel=FALSE,ncores=1) {
   ngen <<- ngen
   sim <- source(script,local = TRUE)
@@ -197,7 +198,7 @@ getVCF <- function(y) {
 ### demResults ###
 # Return `slimr` output separately: model params, data for each cycle and VCF data.
 
-demResults <- function(x) {
+demResults <- function(x, parallel=FALSE,ncores = 1) {
   require(tidyverse)
   require(tictoc)
   tic()
@@ -210,18 +211,24 @@ demResults <- function(x) {
     # Retrieving gen_info
     out[[2]] <- getData(y,final=FALSE)
     
-    # Retrieving gen_info
-    out[[3]] <- getVCF(y)
+    # Retrieving VCF
+    #out[[3]] <- getVCF(y)
   
-    names(out) <- c('sim_data','gen_data','VCF')
+    names(out) <- c('sim_data','gen_data')
+    #names(out) <- c('sim_data','gen_data','VCF')
     return(out)
   }
-  # Checking if x is a list of several slimr sims (where names is null), or just one slimr sim.
-  if (is.null(names(x))) {
-    temp <- lapply(x,getResults)
+  if (parallel) {
+    temp <- mclapply(x,getResults, mc.cores = ncores)
   } else {
-    temp <- getResults(x)
+    temp <- lapply(x,getResults)
   }
+  # Checking if x is a list of several slimr sims (where names is null), or just one slimr sim.
+  #if (is.null(names(x))) {
+  #  temp <- mclapply(x,getResults,ncores = ncores)
+  #} else {
+  #  temp <- getResults(x)
+  #}
   return(temp)
   toc()
 }
