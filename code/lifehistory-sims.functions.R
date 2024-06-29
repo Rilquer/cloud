@@ -144,8 +144,9 @@ getParams <- function(y) {
   params_temp <- y$output_data %>% filter(generation==1) %>% select(name,data) %>%
     pivot_wider(id_cols = everything(),names_from = name,values_from = data) %>% 
     select(!(matches('_p[[:digit:]]$'))) %>% select(!(matches('_all$'))) %>% 
-    #%>% select(-c(fst,total_ht)) %>% 
-    mutate_at(vars(-c("name","ev_type")),as.numeric) %>% mutate(stop_gen = stop_gen)
+    mutate_at(vars(-c("name","ev_type","m","rprob")),as.numeric) %>%
+    mutate_at(vars(c("m","rprob")),str_split,pattern=' ') %>% 
+    mutate(stop_gen = stop_gen)
   return(params_temp)
 }
 
@@ -158,7 +159,9 @@ getData <- function(y, final = FALSE) {
   }
   data_temp <- y$output_data %>% filter(generation %in% last_gen) %>% 
     select(generation,name,data) %>% pivot_wider(id_cols = everything(),names_from = name,values_from = data) %>%
-    select(c(generation,matches('_p[[:digit:]]$'),matches('_all$'))) %>% 
+    select(c(generation,matches('_p[[:digit:]]$'),matches('_all$'))) %>%
+    mutate_at(vars(matches('^pot[[:alpha:]]'),matches('^act[[:alpha:]]'),matches('^off[[:alpha:]]'),matches('^Rep[[:alpha:]]')),
+              str_split,pattern=' ') %>% 
     mutate_if(is.character,as.numeric)
   return(data_temp)
 }
