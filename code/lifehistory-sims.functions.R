@@ -85,8 +85,8 @@ demAncestral <- function(path,name,reps=1,snps=T,samples=500,rec=0,len=1000,size
 ## Ngen - how many generations the simulation should run by
 ## script - an R script creating all the slimr_blocks and merging them with slimr_script.
 ## The value of ngen is expected to be used here.
-demRender <- function(params,ngen,script = 'script.R',parallel=FALSE,ncores=1) {
-  ngen <<- ngen
+demRender <- function(params,script = 'script.R',parallel=FALSE,ncores=1) {
+  ngen <<- unique(params$ngen)
   sim <- source(script,local = TRUE)
   require(tictoc)
   require(future)
