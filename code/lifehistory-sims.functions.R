@@ -86,7 +86,7 @@ demAncestral <- function(path,name,reps=1,snps=T,samples=500,rec=0,len=1000,size
 ## script - an R script creating all the slimr_blocks and merging them with slimr_script.
 ## The value of ngen is expected to be used here.
 demRender <- function(params,script = 'script.R',parallel=FALSE,ncores=1) {
-  ngen <<- unique(params$ngen)
+  nticks <<- unique(params$nticks)
   sim <- source(script,local = TRUE)
   require(tictoc)
   require(future)
@@ -139,27 +139,30 @@ demRun <- function(script,nrep=1,parallel=TRUE,ncores=1) {
 # In the functions below, y = one element inside the output of demRun (i.e., one individual slimr output)
 
 getParams <- function(y) {
-  y$output_data <- y$output_data %>% mutate_at(c("generation"),as.numeric)
-  stop_gen <- max(y$output_data$generation)
-  params_temp <- y$output_data %>% filter(generation==1) %>% select(name,data) %>%
+  y$output_data <- y$output_data %>% rename(tick = generation) %>% 
+    mutate_at(c("tick"),as.numeric)
+  stop_tick <- max(y$output_data$tick)
+  params_temp <- y$output_data %>% filter(tick==1) %>% select(name,data) %>%
     pivot_wider(id_cols = everything(),names_from = name,values_from = data) %>% 
     select(!(matches('_p[[:digit:]]$'))) %>% select(!(matches('_all$'))) %>% 
     mutate_at(vars(-c("name","ev_type","m","rprob")),as.numeric) %>%
     mutate_at(vars(c("m","rprob")),str_split,pattern=' ') %>% 
-    mutate(stop_gen = stop_gen)
+    mutate(stop_tick = stop_tick)
   return(params_temp)
 }
 
 getData <- function(y, final = FALSE) {
-  y$output_data <- y$output_data %>% mutate_at(c("generation"),as.numeric)
+  y$output_data <- y$output_data %>% rename(tick = generation) %>% 
+    mutate_at(c("tick"),as.numeric)
   if (final==TRUE) {
-    last_gen <- max(y$output_data$generation)
+    last_tick <- max(y$output_data$tick)
   } else {
-    last_gen = y$output_data$generation
+    last_tick = y$output_data$tick
   }
-  data_temp <- y$output_data %>% filter(generation %in% last_gen) %>% 
-    select(generation,name,data) %>% pivot_wider(id_cols = everything(),names_from = name,values_from = data) %>%
-    select(c(generation,matches('_p[[:digit:]]$'),matches('_all$'))) %>%
+  data_temp <- y$output_data %>% filter(tick %in% last_tick) %>% 
+    select(tick,name,data) %>%
+    pivot_wider(id_cols = everything(),names_from = name,values_from = data) %>%
+    select(c(tick,matches('_p[[:digit:]]$'),matches('_all$'))) %>%
     mutate_at(vars(matches('^pot[[:alpha:]]'),matches('^act[[:alpha:]]'),matches('^off[[:alpha:]]'),matches('^Rep[[:alpha:]]')),
               str_split,pattern=' ') %>% 
     mutate_if(is.character,as.numeric)
@@ -217,7 +220,7 @@ demResults <- function(x, parallel=FALSE,ncores = 1) {
     # Retrieving VCF
     #out[[3]] <- getVCF(y)
   
-    names(out) <- c('sim_data','gen_data')
+    names(out) <- c('sim_data','tick_data')
     #names(out) <- c('sim_data','gen_data','VCF')
     return(out)
   }
