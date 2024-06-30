@@ -123,11 +123,11 @@ demRun <- function(script,nrep=1,parallel=TRUE,ncores=1) {
     tic()
     #plan(multisession, workers = ncores)
     #sr <- slim_run(script , parallel = TRUE, throw_error = FALSE)
-    sr <- mclapply(script,slim_run, throw_error = FALSE, ncores = ncores)
+    sr <- mclapply(script,slim_run, capture_output = TRUE, show_output = FALSE, throw_error = FALSE, ncores = ncores)
     toc()
   } else {
     tic()
-    sr <- slim_run(script, throw_error = FALSE)
+    sr <- slim_run(script, capture_output = TRUE, show_output = FALSE, throw_error = FALSE)
     toc()
   }
   return(sr)
