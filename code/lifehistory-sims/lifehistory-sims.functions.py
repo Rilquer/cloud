@@ -20,7 +20,7 @@ def recap(x):
   ts = tskit.load(treefile)
   # Recapitate
   if x['ev_type']=='none':
-    ts = pyslim.recapitate(ts, ancestral_Ne=x['Ne_recap'], recombination_rate=0)
+    rts = pyslim.recapitate(ts, ancestral_Ne=x['Ne_recap'], recombination_rate=0)
     
   if x['ev_type']=='split':
     demography = msprime.Demography.from_tree_sequence(ts)
