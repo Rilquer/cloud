@@ -1,11 +1,53 @@
 #### Demographic modeling  ######
 
-## makeAnc() ###
+## eDem_anctree ###
+## Simulates many ancestral trees, without mutations, to be posteriorly sampled
+## for an ancestral pop
+eDem_anctree <- function(params,N,parallel=FALSE,cores=1) {
+  require(reticulate)
+  require(tidyverse)
+  require(parallel)
+  require(tictoc)
+  ms <- import('msprime')
+  tic()
+  if (parallel) {
+    message('Simulating ',N,' ancestral trees')
+    message('Pop size: ',params['pop_size'])
+    message('Sample size: ',params['samples'])
+    message('Sequence Length: ',params['seq_length'])
+    message('Recombination Rate: ',params['rec_rate'])
+    message('Saving to: ',params['path'])
+    message('Running in parallel with ',cores,' cores.')
+    ts <- mclapply(1:N,function(x){return(ms$sim_ancestry(samples=as.numeric(params['samples']),
+                                                          recombination_rate=as.numeric(params['rec_rate']),
+                                                          sequence_length=as.numeric(params['seq_length']),
+                                                          population_size=as.numeric(params['pop_size'])))},
+                   mc.cores = cores)
+    mclapply(1:N,function(x){ts[[x]]$dump(paste0(params['path'],'/anctree_',x,'.tre'))},mc.cores = cores)
+  } else {
+    message('Simulating ',N,' ancestral trees')
+    message('Pop size: ',params['pop_size'])
+    message('Sample size: ',params['samples'])
+    message('Sequence Length: ',params['seq_length'])
+    message('Recombination Rate: ',params['rec_rate'])
+    message('Saving to: ',params['path'])
+    ts <- lapply(1:N,function(x){return(ms$sim_ancestry(samples=as.numeric(params['samples']),
+                                                        recombination_rate=as.numeric(params['rec_rate']),
+                                                        sequence_length=as.numeric(params['seq_length']),
+                                                        population_size=as.numeric(params['pop_size'])))})
+    lapply(1:N,function(x){ts[[x]]$dump(paste0(params['path'],'/anctree_',x,'.tre'))})
+  }
+  toc()
+  invisible()
+}
+
 ## Function to make one ancestral pop by simulating several SNPs, removing tri
 ## allelic SNPs and merging remaining
-## This function is to be used within demAncestral()
+## This function is to be used within demAncestral()#
 
 makeAnc <- function(x,path,name,snps=T,samples=500,rec=0,len=1000,size=10000,mut=1e-5, ncores = 1) {
+  library(reticulate)
+  ms <- import('msprime')
   require(fs)
   source_python('https://raw.githubusercontent.com/Rilquer/cloud/main/lifehistory-sims.functions.py')
   name <- name

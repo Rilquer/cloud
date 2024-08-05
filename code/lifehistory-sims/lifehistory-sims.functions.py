@@ -1,9 +1,8 @@
-def demBurnin(params):
+def eDem_anctree(params):
   import msprime
   ts = msprime.sim_ancestry(samples=params['samples'],recombination_rate=params['rec_rate'],sequence_length=params['seq_length'],population_size=params['pop_size'])
-  ts = msprime.sim_mutations(ts, rate=params['mut_rate'])
-  f = open(params['ms_path'] + '.vcf', 'w')
-  ts.write_vcf(f,position_transform='legacy')
+  f = open(params['path'] + '.tre', 'w')
+  ts.dump(f,position_transform='legacy')
   f.close()
 
 def demBurninRep(params):
