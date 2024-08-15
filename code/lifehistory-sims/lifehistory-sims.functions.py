@@ -1,3 +1,4 @@
+## Creating ancestral trees with msprime
 def eDem_anctree(params):
   import msprime
   ts = msprime.sim_ancestry(samples=params['samples'],recombination_rate=params['rec_rate'],sequence_length=params['seq_length'],population_size=params['pop_size'])
@@ -5,11 +6,29 @@ def eDem_anctree(params):
   ts.dump(f,position_transform='legacy')
   f.close()
 
+## Make ancestral pop by merging independent trees into one tree
+def eDem_ancPop(seq_len):
+  import tskit
+  import numpy as np
+  anc = tskit.TableCollection(sequence_length=seq_len)
+  edge_table = tables.edges
+edge_table.set_columns(
+    left=np.array([0.0, 0.0, 0.0, 0.0]),
+    right=np.array([1e3, 1e3, 1e3, 1e3]),
+    parent=np.array([2, 2, 4, 4], dtype=np.int32),  # References IDs in the node table
+    child=np.array([0, 1, 2, 3], dtype=np.int32),  # References IDs in the node table
+)
+edge_table
+
+
 def demBurninRep(params):
   import msprime
   import concurrent
   with concurrent.futures.ProcessPoolExecutor() as executor:
     executor.map(demBurnin, params['ms_path'],params['samples'],params['rec_rate'],params['seq_length'],params['pop_size'],params['mut_rate'])
+
+
+
 
 ####  Recapitation - reticulate   ####
 def recap(x):

@@ -127,7 +127,7 @@ demAncestral <- function(path,name,reps=1,snps=T,samples=500,rec=0,len=1000,size
 ## Ngen - how many generations the simulation should run by
 ## script - an R script creating all the slimr_blocks and merging them with slimr_script.
 ## The value of ngen is expected to be used here.
-demRender <- function(params,script = 'script.R',parallel=FALSE,ncores=1) {
+eDem_render <- function(params,script = 'script.R',parallel=FALSE,ncores=1) {
   nticks <<- unique(params$nticks)
   sim <- source(script,local = TRUE)
   require(tictoc)
@@ -156,7 +156,7 @@ demRender <- function(params,script = 'script.R',parallel=FALSE,ncores=1) {
 # in parallel.
 # This function will also run msprime to create the initial genetic settings
 
-demRun <- function(script,nrep=1,parallel=TRUE,ncores=1) {
+eDem_run <- function(script,nrep=1,parallel=TRUE,ncores=1) {
   require(tictoc)
   require(future)
   require(parallel)
