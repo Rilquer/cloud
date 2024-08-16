@@ -48,10 +48,12 @@ eDem_anctree <- function(params,N,parallel=FALSE,cores=1) {
 ## 2) Adding mutations to the trees
 ## 3) Saving ancPop to temporary folder, with a random seed for identifier
 ## This function is to be used within eDem_render() when treeSeq == F
-eDem_ancpop <- function(N,G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpath='/.',
+eDem_ancpop <- function(G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpath='/.',
                         samples=NULL,rec_rate=NULL,seq_length=NULL,pop_size=NULL) {
   require(tidyverse)
   require(reticulate)
+  require(pegas)
+  require(vcfR)
   base <- import_builtins()
   tskit <- import('tskit')
   msprime <- import('msprime')
@@ -81,15 +83,26 @@ eDem_ancpop <- function(N,G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outp
     message('Merging SNPs...')
     lapply(1:G,function(x){
       f <- base$open(paste0(dir,'/snp',x,'.vcf'),'w')
-      trees[[x]]$write_vcf(f,position_transform='legacy')
+      trees[[x]]$write_vcf(f, allow_position_zero=TRUE)
+                           #position_transform = 'legacy')
       f$close()
       }
       )
     message('Saving to VCF file...')
     require(pegas)
-    vcfs <- list.files(dir,pattern = '.vcf',full.names = T) %>%
-      lapply(pegas::read.vcf) %>% do.call(what = cbind)
-    seed = sample(1:1000000,1);
+    message('Listing files...')
+    vcffiles <- list.files(dir,pattern = '.vcf',full.names = T)
+    message('Creating list...')
+    vcfs <- vector('list',length(vcffiles))
+    message('Reading vcfs...')
+    for (i in 1:length(vcffiles)) {
+      message('Checking info file ',i)
+      pegas::VCFloci(vcffiles[i],quiet=TRUE)
+      message('Reading file ',i)
+      vcfs[[i]] <- pegas::read.vcf(vcffiles[i])
+    }
+    vcfs <- do.call(vcfs,what = cbind)
+    seed = sample(1:1000000,1)
     if (save_to_temp) {
       ancPop <- paste0(dir,'/ancPop_',seed,'.vcf')
     } else {
@@ -105,7 +118,7 @@ eDem_ancpop <- function(N,G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outp
     tree <- ms$sim_ancestry(samples=as.numeric(samples),recombination_rate=as.numeric(rec_rate),
                             sequence_length=as.numeric(seq_length),population_size=as.numeric(pop_size))
     tree <- msprime$sim_mutations(tree,rate=mut_rate,keep=TRUE)
-    seed = sample(1:1000000,1);
+    seed = sample(1:1000000,1)
     if (save_to_temp) {
       ancPop <- paste0(dir,'/ancPop_',seed,'.vcf')
     } else {

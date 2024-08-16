@@ -1,25 +1,15 @@
 ## Creating ancestral trees with msprime
+def eDem_writevcf(ts,file):
+  f = open(file, 'w')
+  ts.write_vcf(f,position_transform = lambda x: 1 + x)
+  f.close()
+
 def eDem_anctree(params):
   import msprime
   ts = msprime.sim_ancestry(samples=params['samples'],recombination_rate=params['rec_rate'],sequence_length=params['seq_length'],population_size=params['pop_size'])
   f = open(params['path'] + '.tre', 'w')
   ts.dump(f,position_transform='legacy')
   f.close()
-
-## Make ancestral pop by merging independent trees into one tree
-def eDem_ancPop(seq_len):
-  import tskit
-  import numpy as np
-  anc = tskit.TableCollection(sequence_length=seq_len)
-  edge_table = tables.edges
-edge_table.set_columns(
-    left=np.array([0.0, 0.0, 0.0, 0.0]),
-    right=np.array([1e3, 1e3, 1e3, 1e3]),
-    parent=np.array([2, 2, 4, 4], dtype=np.int32),  # References IDs in the node table
-    child=np.array([0, 1, 2, 3], dtype=np.int32),  # References IDs in the node table
-)
-edge_table
-
 
 def demBurninRep(params):
   import msprime
