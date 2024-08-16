@@ -64,7 +64,7 @@ eDem_ancpop <- function(N,G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outp
   if (snp) {
     message('Creating ancestral pop - merging SNPs:')
     files <- list.files(ancTree_path,full.names = T)
-    if (length(files) <= G) {
+    if (length(files) >= G) {
       randomtrees <- files[sample(1:length(files),G)]
     } else {
       stop('Requested number of SNPs higher than the number of available simulated SNPs!')
