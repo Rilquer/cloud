@@ -1,4 +1,5 @@
-#### Demographic modeling  ######
+### Demographic modeling  ######
+#### Pre-formatting ######
 
 ## eDem_anctree ###
 ## Simulates many ancestral trees, without mutations, to be posteriorly sampled
@@ -94,7 +95,7 @@ eDem_ancpop <- function(G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpat
     # Extracting and merging fixed info
     fix <- lapply(vcfs,function(x){return(x@fix)}) %>% do.call(what = rbind)
     # Changing positions and ID
-    fix[,2] <- fix[,3] <- as.character(seq(1:G))
+    fix[,2] <- fix[,3] <- as.character(seq(1:nrow(fix)))
     
     # Adding merging to first VCF and saving it to new object
     vcfs[[1]]@gt <- gt
