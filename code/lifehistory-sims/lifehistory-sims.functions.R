@@ -41,9 +41,82 @@ eDem_anctree <- function(params,N,parallel=FALSE,cores=1) {
   invisible()
 }
 
-## Function to make one ancestral pop by simulating several SNPs, removing tri
-## allelic SNPs and merging remaining
-## This function is to be used within demAncestral()#
+## eDem_ancpop ###
+## Function to make one ancestral pop by:
+## 1) Drawing random SNPs from the previously simulated trees or simulating
+##    from scratch if it is a sequence and not SNP
+## 2) Adding mutations to the trees
+## 3) Saving ancPop to temporary folder, with a random seed for identifier
+## This function is to be used within eDem_render() when treeSeq == F
+eDem_ancpop <- function(N,G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpath='/.',
+                        samples=NULL,rec_rate=NULL,seq_length=NULL,pop_size=NULL) {
+  require(tidyverse)
+  require(reticulate)
+  base <- import_builtins()
+  tskit <- import('tskit')
+  msprime <- import('msprime')
+  ## Check if SNP is T or F
+  ## If T, draw from previously simulated SNPS, add mutations, save individual VCFs,
+  ##   Load VCFs back with pegas, merge and output unified VCF. Use temporary folder
+  ## If F, call `msprime` and simulate sequence. Add mutations, save VCF to temporary folder.
+  ## Use seed number to identify the ancestral pop in the temp folder
+  ## Return temporary folder and seed number to parent function
+  if (snp) {
+    message('Creating ancestral pop - merging SNPs:')
+    files <- list.files(ancTree_path,full.names = T)
+    if (length(files) <= G) {
+      randomtrees <- files[sample(1:length(files),G)]
+    } else {
+      stop('Requested number of SNPs higher than the number of available simulated SNPs!')
+    }
+    dir <- tempdir()
+    file.remove(list.files(dir,full.names = T))
+    
+    ## Getting simulated trees and adding mutations
+    message('Adding mutations...')
+    trees <- lapply(1:G,function(x){tskit$load(randomtrees[x])}) %>%
+      lapply(msprime$sim_mutations,rate=mut_rate,keep=TRUE)
+    
+    # Saving to VCF
+    message('Merging SNPs...')
+    lapply(1:G,function(x){
+      f <- base$open(paste0(dir,'/snp',x,'.vcf'),'w')
+      trees[[x]]$write_vcf(f,position_transform='legacy')
+      f$close()
+      }
+      )
+    message('Saving to VCF file...')
+    require(pegas)
+    vcfs <- list.files(dir,pattern = '.vcf',full.names = T) %>%
+      lapply(pegas::read.vcf) %>% do.call(what = cbind)
+    seed = sample(1:1000000,1);
+    if (save_to_temp) {
+      ancPop <- paste0(dir,'/ancPop_',seed,'.vcf')
+    } else {
+      ancPop <- paste0(outpath,'/ancPop_',seed,'.vcf')
+    }
+    pegas::write.vcf(vcfs,ancPop,CHROM = rep(1,G),POS = seq(1,G))
+  } else {
+    message('Simulating ancestral pop - sequence:')
+    message('Pop size: ',pop_size)
+    message('Sample size: ',samples)
+    message('Sequence Length: ',seq_length)
+    message('Recombination Rate: ',rec_rate)
+    tree <- ms$sim_ancestry(samples=as.numeric(samples),recombination_rate=as.numeric(rec_rate),
+                            sequence_length=as.numeric(seq_length),population_size=as.numeric(pop_size))
+    tree <- msprime$sim_mutations(tree,rate=mut_rate,keep=TRUE)
+    seed = sample(1:1000000,1);
+    if (save_to_temp) {
+      ancPop <- paste0(dir,'/ancPop_',seed,'.vcf')
+    } else {
+      ancPop <- paste0(outpath,'/ancPop_',seed,'.vcf')
+    }
+    f <- base$open(ancPop,'w')
+    trees$write_vcf(f,position_transform='legacy')
+    f$close()
+  }
+  return(ancPop)
+}
 
 makeAnc <- function(x,path,name,snps=T,samples=500,rec=0,len=1000,size=10000,mut=1e-5, ncores = 1) {
   library(reticulate)
@@ -128,6 +201,9 @@ demAncestral <- function(path,name,reps=1,snps=T,samples=500,rec=0,len=1000,size
 ## script - an R script creating all the slimr_blocks and merging them with slimr_script.
 ## The value of ngen is expected to be used here.
 eDem_render <- function(params,script = 'script.R',parallel=FALSE,ncores=1) {
+  # Add code to create ancestral pop
+  # Call eDem_ancPop on each line of params
+  # Add to params a column with the location of the ancestral pop for each
   nticks <<- unique(params$nticks)
   sim <- source(script,local = TRUE)
   require(tictoc)
