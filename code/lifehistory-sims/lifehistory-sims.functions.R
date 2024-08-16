@@ -83,32 +83,33 @@ eDem_ancpop <- function(G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpat
     message('Merging SNPs...')
     lapply(1:G,function(x){
       f <- base$open(paste0(dir,'/snp',x,'.vcf'),'w')
-      trees[[x]]$write_vcf(f, allow_position_zero=TRUE)
-                           #position_transform = 'legacy')
+      trees[[x]]$write_vcf(f,position_transform='legacy')
       f$close()
-      }
-      )
-    message('Saving to VCF file...')
-    require(pegas)
-    message('Listing files...')
-    vcffiles <- list.files(dir,pattern = '.vcf',full.names = T)
-    message('Creating list...')
-    vcfs <- vector('list',length(vcffiles))
-    message('Reading vcfs...')
-    for (i in 1:length(vcffiles)) {
-      message('Checking info file ',i)
-      pegas::VCFloci(vcffiles[i],quiet=TRUE)
-      message('Reading file ',i)
-      vcfs[[i]] <- pegas::read.vcf(vcffiles[i])
     }
-    vcfs <- do.call(vcfs,what = cbind)
+    )
+    vcfs <- list.files(dir,pattern = '.vcf',full.names = T) %>% 
+      lapply(vcfR::read.vcfR)
+    # Extracting and merginggenotype
+    gt <- lapply(vcfs,function(x){return(x@gt)}) %>% do.call(what = rbind)
+    # Extracting and merging fixed info
+    fix <- lapply(vcfs,function(x){return(x@fix)}) %>% do.call(what = rbind)
+    # Changing positions and ID
+    fix[,2] <- fix[,3] <- as.character(seq(1:G))
+    
+    # Adding merging to first VCF and saving it to new object
+    vcfs[[1]]@gt <- gt
+    vcfs[[1]]@fix <- fix
+    vcf <- vcfs[[1]]
+    
+    message('Saving to VCF file...')
     seed = sample(1:1000000,1)
     if (save_to_temp) {
-      ancPop <- paste0(dir,'/ancPop_',seed,'.vcf')
+      ancPop <- paste0(dir,'/ancPop_',seed,'.vcf.gz')
     } else {
-      ancPop <- paste0(outpath,'/ancPop_',seed,'.vcf')
+      ancPop <- paste0(outpath,'/ancPop_',seed,'.vcf.gz')
     }
-    pegas::write.vcf(vcfs,ancPop,CHROM = rep(1,G),POS = seq(1,G))
+    vcfR::write.vcf(vcf,ancPop)
+    R.utils::gunzip(ancPop)
   } else {
     message('Simulating ancestral pop - sequence:')
     message('Pop size: ',pop_size)
