@@ -47,8 +47,7 @@ eDem_anctree <- function(params,N,parallel=FALSE,cores=1) {
 ## 1) Drawing random SNPs from the previously simulated trees or simulating
 ##    from scratch if it is a sequence and not SNP
 ## 2) Adding mutations to the trees
-## 3) Saving ancPop to temporary folder, with a random seed for identifier
-## This function is to be used within eDem_render() when treeSeq == F
+## 3) Saving ancPop with a random seed for identifier
 eDem_ancpop <- function(G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpath='/.',
                         samples=NULL,rec_rate=NULL,seq_length=NULL,pop_size=NULL) {
   require(tidyverse)
@@ -89,19 +88,37 @@ eDem_ancpop <- function(G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpat
     }
     )
     vcfs <- list.files(dir,pattern = '.vcf',full.names = T) %>% 
-      lapply(vcfR::read.vcfR)
-    # Extracting and merginggenotype
-    gt <- lapply(vcfs,function(x){return(x@gt)}) %>% do.call(what = rbind)
-    # Extracting and merging fixed info
-    fix <- lapply(vcfs,function(x){return(x@fix)}) %>% do.call(what = rbind)
-    # Changing positions and ID
-    fix[,2] <- fix[,3] <- as.character(seq(1:nrow(fix)))
-    
-    # Adding merging to first VCF and saving it to new object
-    vcfs[[1]]@gt <- gt
-    vcfs[[1]]@fix <- fix
+      lapply(vcfR::read.vcfR,verbose=FALSE)
+    # Saving first vcf for further editing
     vcf <- vcfs[[1]]
+    # Extracting random SNP per vcf
+    data <- lapply(vcfs,function(x){
+      if (nrow(x@gt>0)) {
+        # If there's at least one row in the GT matrix, we sample one of those rows randomly.
+        var <- sample(1:nrow(x@gt),1)
+        fix <- x@fix[var,]
+        gt <- x@gt[var,]
+      } else {
+        # If not, we return NULL
+        fix <- gt <- NULL
+      }
+      return(list(fix,gt))
+    })
     
+    # Merging SNP data
+    fix <- lapply(data,function(x){return(x[[1]])}) %>% do.call(what = rbind)
+    gt <- lapply(data,function(x){return(x[[2]])}) %>% do.call(what = rbind)
+    
+    # Changing positions by randomly selecting positions from 1:G
+    # and sorting
+    # ID will be a sequence vector
+    fix[,2] <- sample(1:G,nrow(fix)) %>% sort() %>% as.character()
+    fix[,3] <- as.character(seq(1:nrow(fix)))
+    
+    # Editing final VCF
+    vcf@meta[4] <- paste0('##contig=<ID=1,length=',G,'>')
+    vcf@fix <- fix
+    vcf@gt <- gt
     message('Saving to VCF file...')
     seed = sample(1:1000000,1)
     if (save_to_temp) {
@@ -111,6 +128,8 @@ eDem_ancpop <- function(G,snp=T,mut_rate,ancTree_path='./',save_to_temp=T,outpat
     }
     vcfR::write.vcf(vcf,ancPop)
     R.utils::gunzip(ancPop)
+    # Removing gz so SLIM can find the file
+    ancPop <- gsub('.gz$','',ancPop)
   } else {
     message('Simulating ancestral pop - sequence:')
     message('Pop size: ',pop_size)
