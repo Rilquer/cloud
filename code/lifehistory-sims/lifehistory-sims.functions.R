@@ -275,7 +275,7 @@ eDem_run <- function(script,nrep=1,parallel=TRUE,ncores=1) {
     tic()
     #plan(multisession, workers = ncores)
     #sr <- slim_run(script , parallel = TRUE, throw_error = FALSE)
-    sr <- mclapply(script,slim_run, capture_output = TRUE, show_output = FALSE, throw_error = FALSE, ncores = ncores)
+    sr <- mclapply(script,slim_run, capture_output = TRUE, show_output = FALSE, throw_error = FALSE, mc.cores = ncores)
     toc()
   } else {
     tic()
